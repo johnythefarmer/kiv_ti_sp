@@ -22,9 +22,10 @@ public class Gui extends JFrame {
 	int sizeX = 300;
 	int sizeY = 300;
 //	String[] labels = { "1:  A -> aBb ", "2:  A -> bCa ", "3:  B -> aBb ", "4:  B -> $ " };
-    String[] labels = new String[100];
 
     DefaultListModel model = new DefaultListModel();
+    JTextArea textArea = new JTextArea(10, 20);
+    JScrollPane scrollPaneArea = new JScrollPane(textArea);
 
 //    JList list = new JList(model);
 
@@ -38,7 +39,7 @@ public class Gui extends JFrame {
 	    frame.setLayout(new FlowLayout());
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(sizeX, sizeY);
-	    
+
 	    JButton button = new JButton("Vyber soubor");
 	    button.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent ae) {
@@ -61,10 +62,11 @@ public class Gui extends JFrame {
 	        }
 	      }
 	    });
+
+
 	    
 	    JList<?> jlist = new JList(model);
-	    JScrollPane scrollPane1 = new JScrollPane(jlist);
-	    frame.add(scrollPane1, BorderLayout.SOUTH);
+	    JScrollPane scrollPaneList = new JScrollPane(jlist);
 
 	    MouseListener mouseListener = new MouseAdapter() {
 	      public void mouseClicked(MouseEvent mouseEvent) {
@@ -73,18 +75,16 @@ public class Gui extends JFrame {
 	          int index = theList.locationToIndex(mouseEvent.getPoint());
 	          if (index >= 0) {
 	            Object o = theList.getModel().getElementAt(index);
-	            System.out.println("Vybrano: " + o.toString());
+//	            System.out.println("Vybrano: " + o.toString());
+                textArea.append(o.toString());
 	          }
 	        }
 	      }
 	    };
 	    jlist.addMouseListener(mouseListener);
 
-        
-        JTextArea textArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        frame.add(scrollPane);
-
+        frame.add(scrollPaneList);
+        frame.add(scrollPaneArea);
 	    frame.add(button);
 	    frame.pack();
 	    frame.setVisible(true);
@@ -114,7 +114,7 @@ public class Gui extends JFrame {
                 line = "";
             }
             line += c;
-            System.out.print(c);
+//            System.out.print(c);
         }
         
         
