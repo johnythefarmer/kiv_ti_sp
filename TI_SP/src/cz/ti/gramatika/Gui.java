@@ -22,7 +22,7 @@ public class Gui extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	private final int sizeX = 300;
-	private final int sizeY = 300;
+	private final int sizeY = 400;
     private String nameApp = "Gramatika";
     private String nameButtonFile = "Vyber soubor";
     private String nameButtonBack = "Zpet";
@@ -40,12 +40,12 @@ public class Gui extends JFrame {
 	    JFrame frame = new JFrame(nameApp);
 
 	    frame.setLayout(new FlowLayout());
+        frame.setResizable(false);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(sizeX, sizeY);
 
-
-        frame.add(listComp());
         frame.add(new JScrollPane(textArea));
+        frame.add(listComp());
         frame.add(fileComp());
         frame.add(backComp());
 //	    frame.pack();
