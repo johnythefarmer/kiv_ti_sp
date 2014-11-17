@@ -21,67 +21,88 @@ public class Gui extends JFrame {
 
 	
 	private static final long serialVersionUID = 1L;
-	int sizeX = 300;
-	int sizeY = 300;
+	private final int sizeX = 300;
+	private final int sizeY = 300;
+    private String nameApp = "Gramatika";
+    private String nameButtonFile = "Vyber soubor";
+    private String nameButtonBack = "Zpet";
+    private String nameAcceptFile = "TXT soubory";
+    private String acceptFile = "txt";
+    private String startNameArea = "=>";
 
     DefaultListModel model = new DefaultListModel();
     JTextArea textArea = new JTextArea(10, 20);
-    JScrollPane scrollPaneArea = new JScrollPane(textArea);
 
-	private void fileOpen(){
+	private void run(){
 		JFrame.setDefaultLookAndFeelDecorated(true);
 	    JDialog.setDefaultLookAndFeelDecorated(true);
 
-	    final JFrame frame = new JFrame("Gramatika");
+	    JFrame frame = new JFrame(nameApp);
 
 	    frame.setLayout(new FlowLayout());
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(sizeX, sizeY);
 
-	    JButton button = new JButton("Vyber soubor");
-	    button.addActionListener(new ActionListener() {
-	      public void actionPerformed(ActionEvent ae) {
-	        JFileChooser fileChooser = new JFileChooser();
 
-            FileFilter filter = new FileNameExtensionFilter("TXT soubory", "txt");
-            fileChooser.setFileFilter(filter);
-	        
-	        int returnValue = fileChooser.showOpenDialog(null);
-	        if (returnValue == JFileChooser.APPROVE_OPTION) {
-	          File f = fileChooser.getSelectedFile();
-              model.removeAllElements();
-              textArea.setText("");
-	          parseFile(f);
-	        }
-	      }
-	    });
-
-
-	    
-	    JList<?> jlist = new JList(model);
-	    JScrollPane scrollPaneList = new JScrollPane(jlist);
-
-	    MouseListener mouseListener = new MouseAdapter() {
-	      public void mouseClicked(MouseEvent mouseEvent) {
-	        JList<?> theList = (JList<?>) mouseEvent.getSource();
-	        if (mouseEvent.getClickCount() == 2) {
-	          int index = theList.locationToIndex(mouseEvent.getPoint());
-	          if (index >= 0) {
-	            Object o = theList.getModel().getElementAt(index);
-//	            System.out.println("Vybrano: " + o.toString());
-                textArea.append(o.toString());
-	          }
-	        }
-	      }
-	    };
-	    jlist.addMouseListener(mouseListener);
-
-        frame.add(scrollPaneList);
-        frame.add(scrollPaneArea);
-	    frame.add(button);
-	    frame.pack();
+        frame.add(listComp());
+        frame.add(new JScrollPane(textArea));
+        frame.add(fileComp());
+        frame.add(backComp());
+//	    frame.pack();
 	    frame.setVisible(true);
 	}
+
+    private JButton backComp(){
+        JButton button = new JButton(nameButtonBack);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                textArea.append("\nzpet");
+            }
+        });
+        return button;
+    }
+
+    private JScrollPane listComp(){
+        JList<?> jlist = new JList(model);
+        JScrollPane scrollPaneList = new JScrollPane(jlist);
+
+        MouseListener mouseListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+                JList<?> theList = (JList<?>) mouseEvent.getSource();
+                if (mouseEvent.getClickCount() == 2) {
+                    int index = theList.locationToIndex(mouseEvent.getPoint());
+                    if (index >= 0) {
+                        Object o = theList.getModel().getElementAt(index);
+                        textArea.append(o.toString());
+                    }
+                }
+            }
+        };
+        jlist.addMouseListener(mouseListener);
+
+        return scrollPaneList;
+    }
+
+    private JButton fileComp(){
+        JButton button = new JButton(nameButtonFile);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
+                fileChooser.setFileFilter(filter);
+
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File f = fileChooser.getSelectedFile();
+                    model.removeAllElements();
+                    textArea.setText(startNameArea);
+                    parseFile(f);
+                }
+            }
+        });
+        return button;
+    }
 	
     
     private void parseFile(File f){
@@ -99,7 +120,6 @@ public class Gui extends JFrame {
 			e.printStackTrace();
 		}
         
-        int i = 0;
         String line = "";
         for(char c : a){
             if(c == '\n'){
@@ -107,7 +127,6 @@ public class Gui extends JFrame {
                 line = "";
             }
             line += c;
-//            System.out.print(c);
         }
         
         
@@ -122,7 +141,7 @@ public class Gui extends JFrame {
 
     public static void main(String [] arg){
     	Gui g = new Gui();
-    	g.fileOpen();
+    	g.run();
     	
     }
 }
