@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class Gui extends JFrame {
@@ -21,15 +23,11 @@ public class Gui extends JFrame {
 	private static final long serialVersionUID = 1L;
 	int sizeX = 300;
 	int sizeY = 300;
-//	String[] labels = { "1:  A -> aBb ", "2:  A -> bCa ", "3:  B -> aBb ", "4:  B -> $ " };
 
     DefaultListModel model = new DefaultListModel();
     JTextArea textArea = new JTextArea(10, 20);
     JScrollPane scrollPaneArea = new JScrollPane(textArea);
 
-//    JList list = new JList(model);
-
-	
 	private void fileOpen(){
 		JFrame.setDefaultLookAndFeelDecorated(true);
 	    JDialog.setDefaultLookAndFeelDecorated(true);
@@ -44,20 +42,15 @@ public class Gui extends JFrame {
 	    button.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent ae) {
 	        JFileChooser fileChooser = new JFileChooser();
-	        
-	        
-//	        fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-//	               public boolean accept(File file){
-//	                  return file.getName().toUpperCase().equals(".TXT");
-//	               }
-//	               public String getDescription(){
-//	                  return ".txt files";
-//	               }
-//	            });        
+
+            FileFilter filter = new FileNameExtensionFilter("TXT soubory", "txt");
+            fileChooser.setFileFilter(filter);
 	        
 	        int returnValue = fileChooser.showOpenDialog(null);
 	        if (returnValue == JFileChooser.APPROVE_OPTION) {
 	          File f = fileChooser.getSelectedFile();
+              model.removeAllElements();
+              textArea.setText("");
 	          parseFile(f);
 	        }
 	      }
