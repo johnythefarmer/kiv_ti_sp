@@ -1,15 +1,29 @@
 package cz.ti.gramatika;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -25,55 +39,86 @@ public class Gui extends JFrame {
     private String nameButtonBack = "Zpet";
     private String nameAcceptFile = "GR soubory";
     private String acceptFile = "gr";
-    private String startNameArea = "=>\n";
+    private File f;
 
-    DefaultListModel model = new DefaultListModel();
-    JTextArea textArea = new JTextArea(10, 20);
+    DefaultListModel<PrepisPravidlo> model = new DefaultListModel<PrepisPravidlo>();
+    JTextArea textArea = new JTextArea();
     Gramatika gramatika;
+    private JButton back;
 
 	public void run(){
-		JFrame.setDefaultLookAndFeelDecorated(true);
-	    JDialog.setDefaultLookAndFeelDecorated(true);
+	
+		try {
+	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    } 
+	    catch (UnsupportedLookAndFeelException e) {
+	    	e.printStackTrace();
+	    }
+	    catch (ClassNotFoundException e) {
+	    	e.printStackTrace();
+	    }
+	    catch (InstantiationException e) {
+	    	e.printStackTrace();
+	    }
+	    catch (IllegalAccessException e) {
+	    	e.printStackTrace();
+	    } 
+//		textArea.setPreferredSize(new Dimension(280,150));;
 
 	    JFrame frame = new JFrame(nameApp);
-
-        frame.setUndecorated(true);
+	    this.back = backComp();
+//        frame.setUndecorated(true);
 	    frame.setLayout(new FlowLayout());
         frame.setResizable(false);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(sizeX, sizeY);
-
-        frame.add(new JScrollPane(textArea));
+	    JScrollPane textAreaScrollPane = new JScrollPane(textArea);
+	    textAreaScrollPane.setPreferredSize(new Dimension(280,150));
+        frame.add(textAreaScrollPane);
         frame.add(listComp());
         frame.add(fileComp());
-        frame.add(backComp());
+        frame.add(back);
 	    frame.setVisible(true);
 	}
 
     private JButton backComp(){
-        JButton button = new JButton(nameButtonBack);
+       	JButton button = new JButton(nameButtonBack);
+        button.setEnabled(false);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                textArea.append(gramatika.back());
+                
+                String text = gramatika.back();
+                if(text != null){
+                	textArea.append(text+"\n");
+                }
             }
         });
         return button;
     }
 
+    public void disable(){
+//    	textArea.append("Dale jiz nejde jit zpet.\n");
+    	JOptionPane.showMessageDialog(null, "Nelze jiz jit o dalsi krok zpet.", "Nelze zpet", JOptionPane.INFORMATION_MESSAGE);
+    	back.setEnabled(false);
+    }
+    
+    public void enable(){
+    	back.setEnabled(true);
+    }
+    
     private JScrollPane listComp(){
-        JList<?> jlist = new JList(model);
+        JList<PrepisPravidlo> jlist = new JList<PrepisPravidlo>(model);
         JScrollPane scrollPaneList = new JScrollPane(jlist);
+        scrollPaneList.setPreferredSize(new Dimension(280,150));
 
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent mouseEvent) {
-                JList<?> theList = (JList<?>) mouseEvent.getSource();
+                @SuppressWarnings("unchecked")
+				JList<PrepisPravidlo> theList = (JList<PrepisPravidlo>)mouseEvent.getSource();
                 if (mouseEvent.getClickCount() == 2) {
-                    int index = theList.locationToIndex(mouseEvent.getPoint());
-                    if (index >= 0) {
-                        Object o = theList.getModel().getElementAt(index);
-                        textArea.append(o.toString());
-                        textArea.append(gramatika.userRoll(o.toString()));
-                    }
+                        PrepisPravidlo p = theList.getSelectedValue();
+//                        textArea.append(p + "\n");
+                        textArea.append(gramatika.useRule(p)+"\n");
                 }
             }
         };
@@ -87,7 +132,7 @@ public class Gui extends JFrame {
         final JButton button = new JButton(nameButtonFile);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                JFileChooser fileChooser = new JFileChooser();
+                /*JFileChooser fileChooser = new JFileChooser();
 
                 FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
                 fileChooser.setFileFilter(filter);
@@ -98,6 +143,32 @@ public class Gui extends JFrame {
                     model.removeAllElements();
                     textArea.setText(startNameArea);
                     parseFile(f);
+                }*/
+            	if(f != null){
+            		int n = JOptionPane.showConfirmDialog(
+            			    null,
+            			    "Dosavadni postup bude ztracen.\nPokracovat?",
+            			    "Pokracovat?",
+            			    JOptionPane.YES_NO_OPTION);
+            		if(n != JOptionPane.YES_OPTION){
+            			return;
+            		}
+            	}
+            	
+//            	f = new File("gramatika.gr");
+            	
+            	JFileChooser fileChooser = new JFileChooser();
+
+                FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
+                fileChooser.setFileFilter(filter);
+     
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                	f = fileChooser.getSelectedFile();
+                	model.removeAllElements();
+                    parseFile(f);
+                    back.setEnabled(true);
+                    textArea.setText(gramatika.pocZnak+"\n");
                 }
             }
         });
@@ -112,7 +183,6 @@ public class Gui extends JFrame {
         char pocZnak = 0;
         ArrayList<PrepisPravidlo> prepisPrav = new ArrayList<PrepisPravidlo>();
 //        ArrayList netZnaky = new ArrayList<Character>();
-        String netZnaky = "";
 
         try {
             br = new BufferedReader( new FileReader(f));
@@ -131,11 +201,17 @@ public class Gui extends JFrame {
 
             line = br.readLine();
             netZnakyC = Integer.valueOf(line.split("//")[0].trim());
-            line = line.substring(line.length()-2*netZnakyC,line.length()).trim();
+            char nz[] = new char[netZnakyC];
+            
+            char pom = 'A';
+            for(int i = 0; i < netZnakyC; i++){
+            	nz[i] = pom++;
+            }
+            /*line = line.substring(line.length()-2*netZnakyC,line.length()).trim();
             spl = line.split(",");
             for(int i = 0; i < spl.length; i++){
                 netZnaky += spl[i].charAt(0);
-            }
+            }*/
 
             br.readLine();
             br.readLine();
@@ -164,6 +240,12 @@ public class Gui extends JFrame {
             }
 
             br.close();
+            PrepisPravidlo ps[] = new PrepisPravidlo[prepisPrav.size()];
+            for(int i = 0; i < prepisPrav.size(); i++) ps[i] = prepisPrav.get(i);
+
+
+            gramatika = new Gramatika(typGramatiky, pocZnak, nz, ps, this);
+//            back.setEnabled(true);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -171,18 +253,12 @@ public class Gui extends JFrame {
 
 //        checkInput(typGramatiky, pocZnak, netZnaky, prepisPrav);
 
-        char nz[] = new char[netZnaky.length()];
-        for(int i = 0; i < netZnaky.length(); i++) nz[i] = netZnaky.charAt(i);
-
-        PrepisPravidlo ps[] = new PrepisPravidlo[prepisPrav.size()];
-        for(int i = 0; i < prepisPrav.size(); i++) ps[i] = prepisPrav.get(i);
-
-
-        gramatika = new Gramatika(typGramatiky, pocZnak, nz, ps, this);
+//        char nz[] = new char[netZnaky.length()];
+//        for(int i = 0; i < netZnaky.length(); i++) nz[i] = netZnaky.charAt(i);
 
     }
 
-    private void checkInput(String typGrm, char pocZnak, ArrayList<Character> netZnaky, ArrayList<PrepisPravidlo> prepisPrav){
+/*    private void checkInput(String typGrm, char pocZnak, ArrayList<Character> netZnaky, ArrayList<PrepisPravidlo> prepisPrav){
         System.out.println(typGrm);
         System.out.println(pocZnak);
 
@@ -191,12 +267,11 @@ public class Gui extends JFrame {
         for(PrepisPravidlo p : prepisPrav) {
             System.out.println(p);
         }
-    }
+    }*/
 
 
     public static void main(String [] arg){
     	Gui g = new Gui();
     	g.run();
-    	
     }
 }

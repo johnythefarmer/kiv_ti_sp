@@ -1,6 +1,5 @@
 package cz.ti.gramatika;
 
-import java.util.Scanner;
 import java.util.Stack;
 
 public class Gramatika {
@@ -18,9 +17,9 @@ public class Gramatika {
 		this.prepPrav = prepPrav;
 		this.pocZnak = pocZnak;
         this.gui = gui;
-
         this.retezce = new Stack<Retezec>();
         this.r = pocatecniRetezec();
+        
         setListGram(pocZnak);
 	}
 
@@ -43,37 +42,51 @@ public class Gramatika {
 
     public String back(){
         if(retezce.isEmpty()){
-//            gui.textArea.append("Dale jiz nejde jit zpet.");
-            // disable button back
+            gui.disable();
+            return null;
         }else{
             r = retezce.pop();
+            setListGram(r.getNeterminZnak());
+            return r+"";
         }
-        return r.toString();
+        
+        
     }
 
-    public String userRoll(String select) {
-        int index = getSelected(select);
+    public String useRule(PrepisPravidlo pp) {
+        /*int index = getSelected(select);
         if(index < 0) {}// error
-
-        Retezec pom = uzijPravidloNaRet(index, r);
-        retezce.push(r);
-        r = pom;
-        return "null";
+*/
+    	
+    	int index = indexOf(pp);
+    	retezce.push(r);
+        r = uzijPravidloNaRet(index, r);
+        
+        setListGram(r.getNeterminZnak());
+        gui.enable();
+        return r+"";
     }
 
-    public int getSelected(String select){
-//        char neter = select.split(":")[1].split("->")[0].trim().charAt(0);
+    private int indexOf(PrepisPravidlo pp){
+    	for(int i = 0 ; i < prepPrav.length; i++){
+    		if(pp.equals(prepPrav[i])){
+    			return i;
+    		}
+    	}
+    	return -1;
+    	/*//        char neter = select.split(":")[1].split("->")[0].trim().charAt(0);
 //        System.out.println(neter);
+    	System.out.println(select);
         Retezec pom = new Retezec(select.split("->")[1], this);
         int id = pom.najdiPrvniNeterminal(pom.getVlevo(), netermZnaky);
         setListGram(netermZnaky[id]);
         int index = 0;
         for(int i = 0; i < prepPrav.length; i++) if (prepPrav[i].toString().equals(select)) index = i;
 
-        return index;
+        return index;*/
     }
 
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 //		Scanner sc = new Scanner(System.in);
 //		char[] neterm = new char[]{'A', 'B', 'C', 'D'};
 //		PrepisPravidlo[] pp = new PrepisPravidlo[]{new PrepisPravidlo(1, 'A', "aB"), new PrepisPravidlo(2, 'B', "$"), new PrepisPravidlo(3, 'B', "bC"), new PrepisPravidlo(4,'C', "b")};
@@ -88,5 +101,5 @@ public class Gramatika {
 
 //		System.out.println("Konec programu.");
 //		sc.close();
-	}
+	}*/
 }
