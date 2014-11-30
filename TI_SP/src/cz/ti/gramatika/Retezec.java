@@ -70,8 +70,8 @@ public class Retezec {
 	public String toString(){
 		String finalString = "";
 		if(isFinal()){
-			finalString = "(final) ";
+			finalString = " (final)";
 		}
-		return finalString + vlevo + neterminZnak + vpravo; 
+		return vlevo + neterminZnak + vpravo + finalString; 
 	}
 }

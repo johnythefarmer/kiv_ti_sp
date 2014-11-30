@@ -33,6 +33,14 @@ public class PrepisPravidlo {
 		return new Retezec(ret.getVlevo() + pomS + ret.getVpravo(), ret.getGramatika());
 	}
 
+	public int getIndex(){
+		return index;
+	}
+	
+	public String getPrepsane(){
+		return prepsane;
+	}
+	
     public char getNeterm(){
         return neterm;
     }
