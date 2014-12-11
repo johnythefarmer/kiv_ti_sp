@@ -4,6 +4,6 @@ G3P//	typ souboru
     //  prázdný řetězec budeme kódovat jako $
 A   // Počáteční symbol
 // Přepisovací pravidla
-A -> aB | bA | $
+A -> aB | Ab | $
 B -> aC | bB
 C -> aA | bC

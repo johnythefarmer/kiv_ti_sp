@@ -27,25 +27,78 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
+/**
+ * Trida reprezentujici graficke uzivatlske rozhrani
+ */
 public class Gui extends JFrame {
 
-	
+	/**
+	 * UID
+	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Sirka
+	 */
 	private final int sizeX = 300;
+	
+	/**
+	 * Vyska
+	 */
 	private final int sizeY = 370;
+	
+	/**
+	 * Nazev okna
+	 */
     private final String nameApp = "Gramatika";
+    
+    /**
+     * Popiska pro tlacitko ke cteni ze souboru
+     */
     private final String nameButtonFile = "Vyber soubor";
+    
+    /**
+     * Popiska pro tlacitko zpet
+     */
     private final String nameButtonBack = "Zpet";
+    
+    /**
+     * Slovni oznaceni prijimanych typu soboru
+     */
     private final String nameAcceptFile = "GR soubory";
+    
+    /**
+     * Prijimane pripony
+     */
     private final String acceptFile = "gr";
 
+    /**
+     * Seznam pro vykreslovani pravidel
+     */
     DefaultListModel<PrepisPravidlo> model = new DefaultListModel<PrepisPravidlo>();
+    
+    /**
+     * textove pole kam vypisujeme odvozene retezce
+     */
     JTextArea textArea = new JTextArea();
+    
+    /**
+     * Gramatika nad kterou program spustime
+     */
     Gramatika gramatika;
+    
+    /**
+     * Tlacitko zpet
+     */
     private JButton back;
+    
+    /**
+     * Komponenta pro vyber souboru
+     */
     private JFileChooser fileChooser;
 
+    /**
+     * Spusti okno
+     */
 	public void run(){		
 		try {
 	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -86,6 +139,10 @@ public class Gui extends JFrame {
 	    frame.setVisible(true);
 	}
 
+	/**
+	 * Inicializace tlacitka zpet
+	 * @return tlacitko zpet
+	 */
     private JButton backComp(){
        	JButton button = new JButton(nameButtonBack);
         button.setEnabled(false);
@@ -101,16 +158,27 @@ public class Gui extends JFrame {
         return button;
     }
 
+    
+    /**
+     * Zablokuje tlacitko zpet
+     */
     public void disable(){
 //    	textArea.append("Dale jiz nejde jit zpet.\n");
     	JOptionPane.showMessageDialog(null, "Nelze jiz jit o dalsi krok zpet.", "Nelze zpet", JOptionPane.INFORMATION_MESSAGE);
     	back.setEnabled(false);
     }
     
+    /**
+     * odblokuje tlacitko zpet
+     */
     public void enable(){
     	back.setEnabled(true);
     }
     
+    /**
+     * Inicializace oblasti kam budeme vykreslovat
+     * @return oblast
+     */
     private JScrollPane listComp(){
         JList<PrepisPravidlo> jlist = new JList<PrepisPravidlo>(model);
         JScrollPane scrollPaneList = new JScrollPane(jlist);
@@ -132,22 +200,14 @@ public class Gui extends JFrame {
     }
 
 
+    /**
+     * Inicializace tlacitka pro cteni ze souboru
+     * @return tlacitko
+     */
     private JButton fileComp(){
         final JButton button = new JButton(nameButtonFile);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                /*JFileChooser fileChooser = new JFileChooser();
-
-                FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
-                fileChooser.setFileFilter(filter);
-
-                int returnValue = fileChooser.showOpenDialog(null);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File f = fileChooser.getSelectedFile();
-                    model.removeAllElements();
-                    textArea.setText(startNameArea);
-                    parseFile(f);
-                }*/
             	if(!textArea.getText().isEmpty()){
             		int n = JOptionPane.showConfirmDialog(
             			    null,
@@ -158,24 +218,12 @@ public class Gui extends JFrame {
             			return;
             		}
             	}
-/*            	
-            	File f = new File("gramatika.gr");
-            	model.removeAllElements();
-                try{
-                	parseFile(f);
-                    back.setEnabled(true);
-                    textArea.setText(gramatika.pocZnak+"\n");
-                }catch(IllegalArgumentException e){
-                	JOptionPane.showMessageDialog(null, e.getMessage(), "Chyba pri kontrole gramatiky", JOptionPane.INFORMATION_MESSAGE);
-                }*/
             	
-            	
-            
-     
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                 	File f = fileChooser.getSelectedFile();
                 	model.removeAllElements();
+                	textArea.setText("");
                 	try{
 	                	parseFile(f);
 	                    back.setEnabled(true);
@@ -191,6 +239,10 @@ public class Gui extends JFrame {
     }
 	
     
+    /**
+     * Nacte gramatiku ze souboru a zobrazi ji
+     * @param f soubor odkud cteme
+     */
     private void parseFile(File f){
         BufferedReader br = null;
 
@@ -258,26 +310,7 @@ public class Gui extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        checkInput(typGramatiky, pocZnak, netZnaky, prepisPrav);
-
-//        char nz[] = new char[netZnaky.length()];
-//        for(int i = 0; i < netZnaky.length(); i++) nz[i] = netZnaky.charAt(i);
-
     }
-
-/*    private void checkInput(String typGrm, char pocZnak, ArrayList<Character> netZnaky, ArrayList<PrepisPravidlo> prepisPrav){
-        System.out.println(typGrm);
-        System.out.println(pocZnak);
-
-        for(char c : netZnaky) System.out.print(c+" ,");
-        System.out.print("\n");
-        for(PrepisPravidlo p : prepisPrav) {
-            System.out.println(p);
-        }
-    }*/
-
-
     public static void main(String [] arg){
     	Gui g = new Gui();
     	g.run();
