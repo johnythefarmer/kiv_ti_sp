@@ -1,5 +1,8 @@
 package cz.ti.gramatika;
 
+/**
+ * Trida reprezentujici retezec generovany danou gramatikou
+ */
 public class Retezec {
 	/**
 	 * Znaky nalevo od nejlevejsiho neterm znaku
