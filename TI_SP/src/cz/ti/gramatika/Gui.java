@@ -311,6 +311,10 @@ public class Gui extends JFrame {
             e.printStackTrace();
         }
     }
+    /**
+     * Hlavni metoda aplikace
+     * @param arg argumenty z prikazove radky
+     */
     public static void main(String [] arg){
     	Gui g = new Gui();
     	g.run();
