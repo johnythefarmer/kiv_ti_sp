@@ -21,7 +21,7 @@ public class Retezec {
 		this.g = g;
 	}
 	
-	private int najdiPrvniNeterminal(String ret, char[] netermZnaky){
+	public int najdiPrvniNeterminal(String ret, char[] netermZnaky){
 		int delkaRet = ret.length();
 		int velikostNetermZn = netermZnaky.length;
 		for(int i = 0; i < delkaRet;i++){
