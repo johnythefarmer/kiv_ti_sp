@@ -1,0 +1,9 @@
+G2//	typ souboru
+3  //  Počet prvků množiny neterminálních symbolů, neterminály jsou pak implicitně A,B,C
+2   //  Počet prvků množiny terminálních symbolů, výstupy jsou pak implicitně a, b 
+    //  prázdný řetězec budeme kódovat jako $
+A   // Počáteční symbol
+// Přepisovací pravidla
+A -> aBb | bCa
+B -> aBb | $
+C -> bCa | $

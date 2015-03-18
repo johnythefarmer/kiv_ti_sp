@@ -27,27 +27,79 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
+/**
+ * Trida reprezentujici graficke uzivatlske rozhrani
+ */
 public class Gui extends JFrame {
 
-	
+	/**
+	 * UID
+	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Sirka
+	 */
 	private final int sizeX = 300;
-	private final int sizeY = 400;
-    private String nameApp = "Gramatika";
-    private String nameButtonFile = "Vyber soubor";
-    private String nameButtonBack = "Zpet";
-    private String nameAcceptFile = "GR soubory";
-    private String acceptFile = "gr";
-    private File f;
-
-    DefaultListModel<PrepisPravidlo> model = new DefaultListModel<PrepisPravidlo>();
-    JTextArea textArea = new JTextArea();
-    Gramatika gramatika;
-    private JButton back;
-
-	public void run(){
 	
+	/**
+	 * Vyska
+	 */
+	private final int sizeY = 370;
+	
+	/**
+	 * Nazev okna
+	 */
+    private final String nameApp = "Gramatika";
+    
+    /**
+     * Popiska pro tlacitko ke cteni ze souboru
+     */
+    private final String nameButtonFile = "Vyber soubor";
+    
+    /**
+     * Popiska pro tlacitko zpet
+     */
+    private final String nameButtonBack = "Zpet";
+    
+    /**
+     * Slovni oznaceni prijimanych typu soboru
+     */
+    private final String nameAcceptFile = "GR soubory";
+    
+    /**
+     * Prijimane pripony
+     */
+    private final String acceptFile = "gr";
+
+    /**
+     * Seznam pro vykreslovani pravidel
+     */
+    DefaultListModel<PrepisPravidlo> model = new DefaultListModel<PrepisPravidlo>();
+    
+    /**
+     * textove pole kam vypisujeme odvozene retezce
+     */
+    JTextArea textArea = new JTextArea();
+    
+    /**
+     * Gramatika nad kterou program spustime
+     */
+    Gramatika gramatika;
+    
+    /**
+     * Tlacitko zpet
+     */
+    private JButton back;
+    
+    /**
+     * Komponenta pro vyber souboru
+     */
+    private JFileChooser fileChooser;
+
+    /**
+     * Spusti okno
+     */
+	public void run(){		
 		try {
 	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	    } 
@@ -65,6 +117,11 @@ public class Gui extends JFrame {
 	    } 
 //		textArea.setPreferredSize(new Dimension(280,150));;
 
+		fileChooser = new JFileChooser();
+
+        FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
+        fileChooser.setFileFilter(filter);
+		
 	    JFrame frame = new JFrame(nameApp);
 	    this.back = backComp();
 //        frame.setUndecorated(true);
@@ -72,6 +129,7 @@ public class Gui extends JFrame {
         frame.setResizable(false);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(sizeX, sizeY);
+	    textArea.setEditable(false);
 	    JScrollPane textAreaScrollPane = new JScrollPane(textArea);
 	    textAreaScrollPane.setPreferredSize(new Dimension(280,150));
         frame.add(textAreaScrollPane);
@@ -81,6 +139,10 @@ public class Gui extends JFrame {
 	    frame.setVisible(true);
 	}
 
+	/**
+	 * Inicializace tlacitka zpet
+	 * @return tlacitko zpet
+	 */
     private JButton backComp(){
        	JButton button = new JButton(nameButtonBack);
         button.setEnabled(false);
@@ -96,16 +158,27 @@ public class Gui extends JFrame {
         return button;
     }
 
+    
+    /**
+     * Zablokuje tlacitko zpet
+     */
     public void disable(){
 //    	textArea.append("Dale jiz nejde jit zpet.\n");
     	JOptionPane.showMessageDialog(null, "Nelze jiz jit o dalsi krok zpet.", "Nelze zpet", JOptionPane.INFORMATION_MESSAGE);
     	back.setEnabled(false);
     }
     
+    /**
+     * odblokuje tlacitko zpet
+     */
     public void enable(){
     	back.setEnabled(true);
     }
     
+    /**
+     * Inicializace oblasti kam budeme vykreslovat
+     * @return oblast
+     */
     private JScrollPane listComp(){
         JList<PrepisPravidlo> jlist = new JList<PrepisPravidlo>(model);
         JScrollPane scrollPaneList = new JScrollPane(jlist);
@@ -117,7 +190,6 @@ public class Gui extends JFrame {
 				JList<PrepisPravidlo> theList = (JList<PrepisPravidlo>)mouseEvent.getSource();
                 if (mouseEvent.getClickCount() == 2) {
                         PrepisPravidlo p = theList.getSelectedValue();
-//                        textArea.append(p + "\n");
                         textArea.append(gramatika.useRule(p)+"\n");
                 }
             }
@@ -128,23 +200,15 @@ public class Gui extends JFrame {
     }
 
 
+    /**
+     * Inicializace tlacitka pro cteni ze souboru
+     * @return tlacitko
+     */
     private JButton fileComp(){
         final JButton button = new JButton(nameButtonFile);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                /*JFileChooser fileChooser = new JFileChooser();
-
-                FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
-                fileChooser.setFileFilter(filter);
-
-                int returnValue = fileChooser.showOpenDialog(null);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File f = fileChooser.getSelectedFile();
-                    model.removeAllElements();
-                    textArea.setText(startNameArea);
-                    parseFile(f);
-                }*/
-            	if(f != null){
+            	if(!textArea.getText().isEmpty()){
             		int n = JOptionPane.showConfirmDialog(
             			    null,
             			    "Dosavadni postup bude ztracen.\nPokracovat?",
@@ -155,31 +219,34 @@ public class Gui extends JFrame {
             		}
             	}
             	
-//            	f = new File("gramatika.gr");
-            	
-            	JFileChooser fileChooser = new JFileChooser();
-
-                FileFilter filter = new FileNameExtensionFilter(nameAcceptFile, acceptFile);
-                fileChooser.setFileFilter(filter);
-     
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
-                	f = fileChooser.getSelectedFile();
+                	File f = fileChooser.getSelectedFile();
                 	model.removeAllElements();
-                    parseFile(f);
-                    back.setEnabled(true);
-                    textArea.setText(gramatika.pocZnak+"\n");
+                	textArea.setText("");
+                	try{
+	                	parseFile(f);
+	                    back.setEnabled(true);
+	                    textArea.setText(gramatika.pocZnak+"\n");
+	                }catch(IllegalArgumentException e){
+	                	JOptionPane.showMessageDialog(null, e.getMessage(), "Chyba pri kontrole gramatiky", JOptionPane.INFORMATION_MESSAGE);
+	                }
                 }
+            	
             }
         });
         return button;
     }
 	
     
+    /**
+     * Nacte gramatiku ze souboru a zobrazi ji
+     * @param f soubor odkud cteme
+     */
     private void parseFile(File f){
         BufferedReader br = null;
 
-        String typGramatiky = "";
+        TypGramatika typGramatiky;
         char pocZnak = 0;
         ArrayList<PrepisPravidlo> prepisPrav = new ArrayList<PrepisPravidlo>();
 //        ArrayList netZnaky = new ArrayList<Character>();
@@ -192,84 +259,62 @@ public class Gui extends JFrame {
 
         String line = "";
         try {
-            typGramatiky = br.readLine().split("//")[0];
-
-
-            int netZnakyC;
-            String spl[];
-
+            typGramatiky = TypGramatika.valueOf(br.readLine().split("//")[0].trim());
 
             line = br.readLine();
-            netZnakyC = Integer.valueOf(line.split("//")[0].trim());
+            int netZnakyC = Integer.valueOf(line.split("//")[0].trim());
             char nz[] = new char[netZnakyC];
             
             char pom = 'A';
             for(int i = 0; i < netZnakyC; i++){
             	nz[i] = pom++;
             }
-            /*line = line.substring(line.length()-2*netZnakyC,line.length()).trim();
-            spl = line.split(",");
-            for(int i = 0; i < spl.length; i++){
-                netZnaky += spl[i].charAt(0);
-            }*/
 
-            br.readLine();
+            line = br.readLine();
+            int terZnakyC = Integer.valueOf(line.split("//")[0].trim());
+            char tz[] = new char[terZnakyC + 1];
+            pom = 'a';
+
+            for(int i = 0; i < terZnakyC; i++){
+            	tz[i] = pom++;
+            }
+            tz[tz.length - 1] = '$';
+            
             br.readLine();
             pocZnak = br.readLine().charAt(0);
             br.readLine();
 
-            for(int i = 0; i < netZnakyC; i++){
+            String spl[];
+            
+            while(br.ready()){
                 line = br.readLine();
                 spl = line.split("->");
                 char n = spl[0].trim().charAt(0);
                 line = spl[1].trim();
-                String tp = "";
-//                System.out.println(line);
-                for(int k = 0; k <= line.length(); k++){
-                    if(k == line.length()){
-                        prepisPrav.add(new PrepisPravidlo(prepisPrav.size()+1, n, tp));
-                        break;
-                    }
-                    if(line.charAt(k) == ' ' || line.charAt(k) == '|'){
-                        k += 3;
-                        prepisPrav.add(new PrepisPravidlo(prepisPrav.size()+1, n, tp));
-                        tp = "";
-                    }
-                    tp += line.charAt(k);
+                String[] pravidla = line.split("\\|");
+                
+                for(int i = 0; i < pravidla.length; i++){
+                	String pravidlo = pravidla[i].trim();
+                	prepisPrav.add(new PrepisPravidlo(prepisPrav.size()+1, n, pravidlo));
                 }
             }
 
             br.close();
             PrepisPravidlo ps[] = new PrepisPravidlo[prepisPrav.size()];
-            for(int i = 0; i < prepisPrav.size(); i++) ps[i] = prepisPrav.get(i);
+            for(int i = 0; i < prepisPrav.size(); i++){
+            	ps[i] = prepisPrav.get(i);
+            }
 
-
-            gramatika = new Gramatika(typGramatiky, pocZnak, nz, ps, this);
-//            back.setEnabled(true);
+            gramatika = new Gramatika(typGramatiky, pocZnak, nz, tz, ps, this);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        checkInput(typGramatiky, pocZnak, netZnaky, prepisPrav);
-
-//        char nz[] = new char[netZnaky.length()];
-//        for(int i = 0; i < netZnaky.length(); i++) nz[i] = netZnaky.charAt(i);
-
     }
-
-/*    private void checkInput(String typGrm, char pocZnak, ArrayList<Character> netZnaky, ArrayList<PrepisPravidlo> prepisPrav){
-        System.out.println(typGrm);
-        System.out.println(pocZnak);
-
-        for(char c : netZnaky) System.out.print(c+" ,");
-        System.out.print("\n");
-        for(PrepisPravidlo p : prepisPrav) {
-            System.out.println(p);
-        }
-    }*/
-
-
+    /**
+     * Hlavni metoda aplikace
+     * @param arg argumenty z prikazove radky
+     */
     public static void main(String [] arg){
     	Gui g = new Gui();
     	g.run();
