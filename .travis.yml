@@ -1,2 +1,2 @@
 language: java
-script: java -v
+script: java Main
