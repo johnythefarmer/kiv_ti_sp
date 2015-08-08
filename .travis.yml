@@ -1,3 +1,5 @@
 language: java
 install: javac TI_SP/src/cz/ti/gramatika/*.java
-script: java cz.ti.gramatika.Gui
+script: 
+  - cd TI_SP/src
+  - java cz.ti.gramatika.Gui
