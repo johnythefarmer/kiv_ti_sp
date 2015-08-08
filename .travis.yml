@@ -1,4 +1,4 @@
 language: java
 before_install: cd TI_SP/src/cz/ti/gramatika
-install: javac Gramatika.java
+install: javac *.java
 script: java Gramatika
